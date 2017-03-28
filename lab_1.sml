@@ -7,8 +7,6 @@ structure id291491 :> PART_ONE =
 struct
 exception NotImplemented
 
-  datatype 'a tree= Leaf of 'a | Node of 'a tree * 'a * 'a tree
-
   fun sum n =
   if n = 1 then 1 
   else n + sum (n-1);
@@ -34,26 +32,86 @@ exception NotImplemented
 
 
 
-  fun sumTree _ = raise NotImplemented
-  fun depth _ = raise NotImplemented
-  fun binSearch _ _ = raise NotImplemented
-  fun preorder _ = raise NotImplemented
+  fun sumTree (Leaf n) = n
+  | sumTree (Node (left, n, right)) = (sumTree left + n + sumTree right);
 
-  fun listAdd _ _ = raise NotImplemented
-  fun insert _ _ = raise NotImplemented 
-  fun insort _ = raise NotImplemented 
+  fun depth (Leaf n) = 0
+  | depth (Node (left, n, right)) = 
+  if(depth left) > (depth right) then 1 + (depth left)
+  else 1 + (depth right);
 
-  fun compose _ _  = raise NotImplemented 
-  fun curry _ _ _ = raise NotImplemented 
-  fun uncurry _ _ = raise NotImplemented
-  fun multifun _ _ = raise NotImplemented
+  fun binSearch (Leaf n) m = 
+  if (n=m) then true
+  else false
+  | binSearch(Leaf _)_ = false
+  binSearch (Node (left, n, right)) m = 
+  if (n = m) then true
+  else if (n < m) then ((binSearch right) m)
+  else ((binSearch left) m );
+  
 
-  fun ltake _ _ = raise NotImplemented
-  fun lall _ _ = raise NotImplemented
-  fun lmap _ _ = raise NotImplemented
-  fun lrev _ = raise NotImplemented
-  fun lzip _ = raise NotImplemented
-  fun split _ = raise NotImplemented
-  fun cartprod _ _ = raise NotImplemented
 
-end
+  fun preorder t =
+  case t of
+  Leaf a => [a]
+  | Node(left,x,right) => x :: (preorder left) @ (preorder right);
+  
+  fun listAdd l1 [] = l1
+  | listAdd [] l2 = l2
+  | listAdd (head1::tail1) (head2::tail2) = (head1 + head2) :: (listAdd tail1 tail2);
+  
+  fun insert (m:int) [] = [m]
+  | insert (m:int) (l:int list as h::t) =
+  if m < h then m :: l
+  else h :: insert m t ;
+
+  fun insort (m:int list) = 
+  case m of
+	nil => []
+	| h::t => insert h (insort t);
+
+
+
+  fun compose f g = (fn x =>g(f x));
+  
+  fun curry f x y  = f(x,y);
+  
+  fun uncurry f(x,y) = f x y;
+  
+  fun multifun f n =
+  if n=1 then (fn x =>f x)
+  else (fn x =>f((multifun f (n-1))x));
+
+
+
+  fun ltake _ 0 = []
+  | ltake [] _ = []
+  | ltake (head::tail) n = head :: (ltake tail (n-1));
+  
+  fun lall f [] = true
+  | lall f (head::tail) 
+  if not (f head) then false
+  else lall f tail;
+
+  fun lmap f [] = []
+  | lmap f (head::tail) = (f head) :: (lmap f tail);
+
+  fun lrev [] = []
+  | lrev (head::tail) = (lrev tail) @ [head]
+  
+  fun lzip ([], _) = []
+  | lzip (_, []) = []
+  | lzip (head1::tail1, head2::tail2) = (head1, head2) :: (lzip (tail1, tail2))
+	
+  fun split [] = ([], [])
+  | split (head::tail) =
+  let
+	val (a, b) = split tail
+	in
+	(head :: b, a)
+  end
+
+  fun cartprod [] _ = []
+  | cartprod _ [] = []
+  | cartprod (head1::tail1) (head2::tail2) =
+  (head1, head2) :: (cartprod [head1] tail2) @ (cartprod tail1 (head2::tail2));
