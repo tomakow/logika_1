@@ -5,15 +5,34 @@
  *)
 structure id291491 :> PART_ONE =
 struct
-  exception NotImplemented
+exception NotImplemented
 
   datatype 'a tree= Leaf of 'a | Node of 'a tree * 'a * 'a tree
 
-  fun sum _ = raise NotImplemented
-  fun fac _ = raise NotImplemented
-  fun fib _ = raise NotImplemented
-  fun gcd _ = raise NotImplemented
-  fun max _ = raise NotImplemented
+  fun sum n =
+  if n = 1 then 1 
+  else n + sum (n-1);
+
+  fun fac n =
+  if n = 1 then 1 
+  else n * fac (n-1) ;
+
+  fun fib n =
+  if n=1 then 1
+  else if n=2 then 1
+  else fib(n-1) + fib(n-2) ;
+
+  fun gcd (n,m) =
+  if n=m then m
+  else if m>n then gcd (n , m- n)
+  else gcd(n- m, m) ;
+
+  fun max l =
+  if (null l = true) then 0 
+  else if hd l > max(tl l) then hd l
+  else max(tl l);
+
+
 
   fun sumTree _ = raise NotImplemented
   fun depth _ = raise NotImplemented
